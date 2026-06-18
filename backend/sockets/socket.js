@@ -1,4 +1,18 @@
 import Session from "../models/Session.js";
+import { findActiveSession, SECTION_NOT_FOUND } from "../utils/sessionHelpers.js";
+
+async function decrementUsers(io, code) {
+  await Session.updateOne(
+    { code, usersOnline: { $gt: 0 } },
+    { $inc: { usersOnline: -1 } }
+  );
+
+  const updated = await Session.findOne({ code });
+
+  if (updated) {
+    io.to(code).emit("online-users", updated.usersOnline);
+  }
+}
 
 export default (io) => {
 
@@ -6,19 +20,27 @@ export default (io) => {
 
     console.log("User Connected");
 
-    // STEP 6
     socket.on("join-session", async (code) => {
 
-      // Save room code on socket
-      socket.sessionCode = code;
-
-      const session = await Session.findOne({ code });
+      const session = await findActiveSession(code);
 
       if (!session) {
-        socket.emit("error-message", "Session not found");
+        socket.emit("error-message", SECTION_NOT_FOUND);
         return;
       }
 
+      if (socket.sessionCode === code) {
+        socket.emit("clipboard-update", session.clipboardData);
+        socket.emit("online-users", session.usersOnline);
+        return;
+      }
+
+      if (socket.sessionCode) {
+        await decrementUsers(io, socket.sessionCode);
+        socket.leave(socket.sessionCode);
+      }
+
+      socket.sessionCode = code;
       socket.join(code);
 
       await Session.updateOne(
@@ -40,44 +62,43 @@ export default (io) => {
 
     });
 
+    socket.on("leave-session", async (code) => {
+      if (!socket.sessionCode || socket.sessionCode !== code) return;
 
-  // STEP 7
+
+      socket.sessionCode = null;
+      await decrementUsers(io, code);
+      socket.leave(code);
+    });
+
   socket.on(
     "clipboard-change",
     async ({ code, data }) => {
+
+      const session = await findActiveSession(code);
+
+      if (!session || !socket.rooms.has(code)) {
+        socket.emit("error-message", SECTION_NOT_FOUND);
+        return;
+      }
 
       await Session.updateOne(
         { code },
         { clipboardData: data }
       );
 
-      socket
-        .to(code)
-        .emit("clipboard-update", data);
+      socket.to(code).emit("clipboard-update", data);
     }
   );
 
 
-  // STEP 8
   socket.on("disconnect", async () => {
 
     if (!socket.sessionCode) return;
 
-    await Session.updateOne(
-      { code: socket.sessionCode },
-      { $inc: { usersOnline: -1 } }
-    );
-
-    const updated = await Session.findOne({
-      code: socket.sessionCode
-    });
-
-    if (updated) {
-      io.to(socket.sessionCode).emit(
-        "online-users",
-        updated.usersOnline
-      );
-    }
+    const code = socket.sessionCode;
+    socket.sessionCode = null;
+    await decrementUsers(io, code);
 
   });
 
