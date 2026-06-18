@@ -11,16 +11,12 @@ import setupSocket from "./sockets/socket.js";
 
 dotenv.config();
 
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("DB Connected"))
-  .catch((err) => console.log(err));
 
 const server = http.createServer(app);
 
@@ -31,12 +27,8 @@ const io = new Server(server, {
   }
 });
 
-// Socket
 setupSocket(io);
-
-// Cleanup
 Cleanup();
-
 
 app.get("/", (req, res) => {
   res.send("Server Running");
@@ -44,8 +36,18 @@ app.get("/", (req, res) => {
 
 app.use("/api/session", sessionRoutes);
 
-const PORT = process.env.PORT || 3000;
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("DB Connected");
+  } catch (err) {
+    console.error("DB connection failed:", err);
+    process.exit(1);
+  }
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+  server.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+};
+
+startServer();
