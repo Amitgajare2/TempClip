@@ -1,0 +1,77 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: color-mix(in oklab, var(--primary-color) 78%, transparent);
+    color: var(--text-color);
+    backdrop-filter: blur(20px) saturate(180%);
+    border-bottom: 1px solid var(--surface-border);
+    padding: 18px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.navbar .nav-title h1 {
+    font-size: 1.5rem;
+    font-weight: bold;
+    font-family: var(--logo-font);
+}
+
+.navbar .nav-title a {
+    color: var(--text-color);
+}
+
+.navbar .nav-links ul {
+    display: none;
+    gap: 1rem;
+    font-family: var(--text-font);
+}
+
+.navbar .nav-links ul li {
+    color: color-mix(in oklab, var(--text-color) 50%, transparent);
+    text-decoration: none;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.navbar .nav-links ul li:hover {
+    color: var(--text-color);
+    transition: 0.5s in-out;
+}
+
+.navbar .nav-mode .dark {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--surface-border);
+    background: var(--surface);
+    transition: background 0.2s, border-color 0.2s;
+}
+
+.navbar .nav-mode .dark:hover {
+    background: var(--secondary-color);
+}
+
+.navbar .nav-mode .dark .dark-icon {
+    width: 17px;
+    height: 17px;
+    color: var(--text-color);
+}
+
+@media only screen and (max-width: 480px) {
+    .navbar {
+        flex-direction: row;
+        align-items: flex-start;
+        padding: 1rem;
+    }
+
+    .navbar .nav-links ul {
+        display: none;
+    }
+}

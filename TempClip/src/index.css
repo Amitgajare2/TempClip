@@ -1,0 +1,72 @@
+:root,
+[data-theme="light"] {
+    --primary-color: #fafaf9;
+    --secondary-color: #ececeb;
+    --accent-color: #00000070;
+    --dark-color: #0b0b0d;
+    --logo-font: 'Bebas Neue', serif;
+    --heading-font:'Melodrama', serif;
+    --text-font: 'Bricolage Grotesque', sans-serif;
+    --text-color: #15151a;
+    --dark-text: #e0e0e0;
+
+    /* component-level */
+    --surface: #ffffff;
+    --surface-border: rgba(15, 23, 42, 0.08);
+    --input-bg: #ffffff;
+    --muted: #6b7280;
+}
+
+[data-theme="dark"] {
+    --primary-color: #0f0f11;
+    --secondary-color: #1e1e22;
+    --accent-color: #ffffff50;
+    --dark-color: #1a1a1f;
+    --text-color: #e8e8ec;
+    --dark-text: #c4c4cc;
+
+    /* component-level */
+    --surface: #1a1a1f;
+    --surface-border: rgba(255, 255, 255, 0.07);
+    --input-bg: #1a1a1f;
+    --muted: #9ca3af;
+}
+
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.2s ease;
+}
+
+body {
+    background: var(--primary-color);
+    color: var(--text-color);
+}
+
+ul {
+    list-style: none;
+}
+
+a{
+  text-decoration: none;
+}
+
+/* ── Page transition ─────────────────────────────────── */
+@keyframes pageEnter {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.page-wrapper {
+    animation: pageEnter 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
