@@ -200,4 +200,4 @@ The output is in `TempClip/dist/`. Serve it with any static host or configure yo
 
 ## Author
 
-Built by **Amit Gajare**
+Built by **Amit Gajare** and **Coffee**
